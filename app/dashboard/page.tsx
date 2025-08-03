@@ -22,6 +22,7 @@ import {
   Calendar,
   PiggyBank,
   Sparkles,
+  FileText,
 } from "lucide-react"
 import Link from "next/link"
 import { GrowthChart } from "@/components/growth-chart"
@@ -33,6 +34,7 @@ import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { FinancialInsights } from "@/components/dashboard/financial-insights"
 import { ChallengePreview } from "@/components/dashboard/challenge-preview"
 import { FinancialNews } from "@/components/dashboard/financial-news"
+import { FinancialReport } from "@/components/financial-report"
 
 interface UserData {
   name: string
@@ -194,7 +196,12 @@ export default function DashboardPage() {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Your Financial Dashboard</h2>
+              <div className="flex items-center space-x-3 mb-3">
+                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Your Financial Dashboard</h2>
+                <Badge className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-0 animate-pulse">
+                  NEW: Financial Report
+                </Badge>
+              </div>
               <p className="text-xl text-gray-600 font-medium">Track your progress and achieve your financial goals</p>
             </div>
             <div className="mt-4 md:mt-0 text-left md:text-right">
@@ -367,10 +374,14 @@ export default function DashboardPage() {
 
         {/* Detailed Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview" className="flex items-center space-x-2">
               <TrendingUp className="h-4 w-4" />
               <span>Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="report" className="flex items-center space-x-2">
+              <FileText className="h-4 w-4" />
+              <span>Report</span>
             </TabsTrigger>
             <TabsTrigger value="chat" className="flex items-center space-x-2">
               <MessageCircle className="h-4 w-4" />
@@ -416,6 +427,15 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="report">
+            <FinancialReport 
+              userData={userData}
+              userProgress={userProgress}
+              projectedValue={projectedValue}
+              progressPercentage={progressPercentage}
+            />
           </TabsContent>
 
           <TabsContent value="chat">
