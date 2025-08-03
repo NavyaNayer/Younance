@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { XAxis, YAxis, ResponsiveContainer, BarChart, Bar } from "recharts"
+import { CurrencyDisplay } from "@/components/ui/currency"
+import { useFormatCurrency } from "@/hooks/use-currency"
 
 export function CompoundInterestCalculator() {
   const [principal, setPrincipal] = useState("10000")
@@ -14,6 +16,7 @@ export function CompoundInterestCalculator() {
   const [annualRate, setAnnualRate] = useState("8")
   const [years, setYears] = useState("10")
   const [compoundFrequency, setCompoundFrequency] = useState("12")
+  const formatCurrency = useFormatCurrency()
 
   const calculateCompoundInterest = () => {
     const P = Number.parseFloat(principal) || 0
@@ -157,15 +160,19 @@ export function CompoundInterestCalculator() {
           <div className="pt-4 border-t space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-600">Total Contributions:</span>
-              <span className="font-semibold">${result.totalContributions.toLocaleString()}</span>
+              <CurrencyDisplay amount={result.totalContributions} />
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Interest Earned:</span>
-              <span className="font-semibold text-green-600">${result.totalInterest.toLocaleString()}</span>
+              <span className="font-semibold text-green-600">
+                <CurrencyDisplay amount={result.totalInterest} />
+              </span>
             </div>
             <div className="flex justify-between text-lg">
               <span className="font-semibold">Final Amount:</span>
-              <span className="font-bold text-blue-600">${result.totalValue.toLocaleString()}</span>
+              <span className="font-bold text-blue-600">
+                <CurrencyDisplay amount={result.totalValue} />
+              </span>
             </div>
           </div>
         </CardContent>
@@ -182,11 +189,11 @@ export function CompoundInterestCalculator() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
                 <XAxis dataKey="year" tickLine={false} axisLine={false} />
-                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value / 1000, { compact: true }) + "k"} />
                 <ChartTooltip
                   content={<ChartTooltipContent />}
                   formatter={(value, name) => [
-                    `$${Number(value).toLocaleString()}`,
+                    formatCurrency(Number(value)),
                     name === "totalValue"
                       ? "Total Value"
                       : name === "contributions"

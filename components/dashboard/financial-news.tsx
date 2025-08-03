@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CurrencyDisplay } from "@/components/ui/currency"
 import {
   Newspaper,
   TrendingUp,
@@ -281,7 +282,9 @@ export function FinancialNews() {
                     </div>
 
                     <div className="text-right">
-                      <div className="font-semibold text-sm text-gray-900">${data.price.toLocaleString()}</div>
+                      <div className="font-semibold text-sm text-gray-900">
+                        <CurrencyDisplay amount={data.price} />
+                      </div>
                       <div
                         className={`text-xs flex items-center space-x-1 ${
                           isPositive ? "text-green-600" : "text-red-600"
@@ -289,7 +292,7 @@ export function FinancialNews() {
                       >
                         {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                         <span>
-                          {isPositive ? "+" : ""}${Math.abs(data.change).toFixed(2)}({isPositive ? "+" : ""}
+                          {isPositive ? "+" : ""}<CurrencyDisplay amount={Math.abs(data.change)} />({isPositive ? "+" : ""}
                           {data.changePercent.toFixed(2)}%)
                         </span>
                       </div>

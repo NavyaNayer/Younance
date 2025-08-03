@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { CurrencyDisplay } from "@/components/ui/currency"
+import { useFormatCurrency, useCurrency } from "@/hooks/use-currency"
 import {
   MessageCircle,
   TrendingUp,
@@ -36,6 +38,7 @@ interface UserData {
   name: string
   age: string
   income: string
+  currency: string
   currentSavings: string
   monthlySavings: string
   goal: string
@@ -242,7 +245,7 @@ export default function DashboardPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-semibold">
-                      ${goalAmount.toLocaleString()} by age {Number.parseInt(userData.age) + targetYears}
+                      <CurrencyDisplay amount={goalAmount} /> by age {Number.parseInt(userData.age) + targetYears}
                     </span>
                     <Badge variant={progressPercentage >= 100 ? "default" : "secondary"} className="text-lg px-3 py-1">
                       {Math.round(progressPercentage)}%
@@ -254,7 +257,7 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-2 gap-4 pt-4">
                     <div className="text-center p-3 bg-green-50 rounded-lg">
                       <div className="text-2xl font-bold text-green-600">
-                        ${Math.round(projectedValue).toLocaleString()}
+                        <CurrencyDisplay amount={Math.round(projectedValue)} />
                       </div>
                       <p className="text-sm text-green-700">Projected Value</p>
                     </div>
@@ -288,21 +291,21 @@ export default function DashboardPage() {
                       <TrendingDown className="h-4 w-4 text-red-600" />
                       <span className="text-sm">Expenses</span>
                     </div>
-                    <span className="font-semibold text-red-600">$1,234</span>
+                    <span className="font-semibold text-red-600"><CurrencyDisplay amount={1234} /></span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <TrendingUp className="h-4 w-4 text-green-600" />
                       <span className="text-sm">Income</span>
                     </div>
-                    <span className="font-semibold text-green-600">$4,500</span>
+                    <span className="font-semibold text-green-600"><CurrencyDisplay amount={4500} /></span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <PiggyBank className="h-4 w-4 text-emerald-600" />
                       <span className="text-sm">Saved</span>
                     </div>
-                    <span className="font-semibold text-emerald-600">$3,266</span>
+                    <span className="font-semibold text-emerald-600"><CurrencyDisplay amount={3266} /></span>
                   </div>
 
                   <div className="pt-3 border-t">
@@ -396,9 +399,9 @@ export default function DashboardPage() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="p-4 bg-emerald-50 rounded-lg">
-                      <h4 className="font-semibold text-emerald-900 mb-2">💡 What if you saved $100 more per month?</h4>
+                      <h4 className="font-semibold text-emerald-900 mb-2">💡 What if you saved <CurrencyDisplay amount={100} /> more per month?</h4>
                       <div className="text-2xl font-bold text-emerald-600">
-                        +${Math.round(calculateFutureValue(targetYears) * 0.15).toLocaleString()}
+                        +<CurrencyDisplay amount={Math.round(calculateFutureValue(targetYears) * 0.15)} />
                       </div>
                       <p className="text-sm text-emerald-700">Additional value in {targetYears} years</p>
                     </div>
@@ -477,13 +480,13 @@ export default function DashboardPage() {
                     <div>
                       <label className="text-sm font-medium text-gray-600">Annual Income</label>
                       <p className="text-gray-900 font-semibold">
-                        ${Number.parseFloat(userData.income).toLocaleString()}
+                        <CurrencyDisplay amount={userData.income} />
                       </p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-600">Monthly Savings</label>
                       <p className="text-gray-900 font-semibold">
-                        ${Number.parseFloat(userData.monthlySavings).toLocaleString()}
+                        <CurrencyDisplay amount={userData.monthlySavings} />
                       </p>
                     </div>
                     <div>
@@ -493,7 +496,7 @@ export default function DashboardPage() {
                     <div>
                       <label className="text-sm font-medium text-gray-600">Target Amount</label>
                       <p className="text-gray-900 font-semibold">
-                        ${Number.parseFloat(userData.goalAmount).toLocaleString()}
+                        <CurrencyDisplay amount={Number.parseFloat(userData.goalAmount)} />
                       </p>
                     </div>
                   </div>

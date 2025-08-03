@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { CurrencyDisplay } from "@/components/ui/currency"
+import { useFormatCurrency } from "@/hooks/use-currency"
 
 export function SIPCalculator() {
   const [monthlyInvestment, setMonthlyInvestment] = useState("5000")
@@ -14,6 +16,7 @@ export function SIPCalculator() {
   const [investmentPeriod, setInvestmentPeriod] = useState("10")
   const [stepUpRate, setStepUpRate] = useState("10")
   const [sipType, setSipType] = useState("regular")
+  const formatCurrency = useFormatCurrency()
 
   const calculateSIP = () => {
     const monthly = Number.parseFloat(monthlyInvestment) || 0
@@ -183,15 +186,19 @@ export function SIPCalculator() {
           <div className="pt-4 border-t space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-600">Total Investment:</span>
-              <span className="font-semibold">${result.totalInvestment.toLocaleString()}</span>
+              <CurrencyDisplay amount={result.totalInvestment} />
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Total Returns:</span>
-              <span className="font-semibold text-green-600">${result.totalReturns.toLocaleString()}</span>
+              <span className="font-semibold text-green-600">
+                <CurrencyDisplay amount={result.totalReturns} />
+              </span>
             </div>
             <div className="flex justify-between text-lg">
               <span className="font-semibold">Maturity Value:</span>
-              <span className="font-bold text-blue-600">${result.futureValue.toLocaleString()}</span>
+              <span className="font-bold text-blue-600">
+                <CurrencyDisplay amount={result.futureValue} />
+              </span>
             </div>
           </div>
 
@@ -220,11 +227,11 @@ export function SIPCalculator() {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <XAxis dataKey="year" tickLine={false} axisLine={false} />
-                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value / 1000, { compact: true }) + "k"} />
                 <ChartTooltip
                   content={<ChartTooltipContent />}
                   formatter={(value, name) => [
-                    `$${Number(value).toLocaleString()}`,
+                    formatCurrency(Number(value)),
                     name === "investment" ? "Total Investment" : "Returns",
                   ]}
                   labelFormatter={(label) => `Year ${label}`}

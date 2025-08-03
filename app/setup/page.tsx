@@ -16,6 +16,7 @@ interface UserData {
   name: string
   age: string
   income: string
+  currency: string
   currentSavings: string
   monthlySavings: string
   goal: string
@@ -32,6 +33,7 @@ export default function SetupPage() {
     name: "",
     age: "",
     income: "",
+    currency: "",
     currentSavings: "",
     monthlySavings: "",
     goal: "",
@@ -41,15 +43,14 @@ export default function SetupPage() {
     expenses: "",
   })
 
-  const totalSteps = 4
+  const totalSteps = 3
   const progressPercentage = (step / totalSteps) * 100
 
-  const stepIcons = [User, DollarSign, Target, Settings]
+  const stepIcons = [User, DollarSign, Target]
   const stepTitles = [
     "Personal Information",
     "Financial Overview", 
-    "Goals & Timeline",
-    "Risk & Preferences"
+    "Goals & Timeline"
   ]
 
   const handleInputChange = (field: keyof UserData, value: string) => {
@@ -62,6 +63,11 @@ export default function SetupPage() {
     } else {
       // Save data to localStorage and redirect to dashboard
       localStorage.setItem("younance-user-data", JSON.stringify(userData))
+      
+      // Dispatch custom event to notify sidebar of data update
+      window.dispatchEvent(new CustomEvent('younance-data-updated'))
+      
+      console.log("Saved user data:", userData) // Debug log
       router.push("/dashboard")
     }
   }
@@ -75,13 +81,11 @@ export default function SetupPage() {
   const isStepValid = () => {
     switch (step) {
       case 1:
-        return userData.name && userData.age && userData.income
+        return userData.name && userData.age && userData.income && userData.currency
       case 2:
         return userData.currentSavings && userData.monthlySavings
       case 3:
         return userData.goal && userData.goalAmount && userData.timeframe
-      case 4:
-        return true
       default:
         return false
     }
@@ -200,6 +204,49 @@ export default function SetupPage() {
                   />
                   <p className="text-sm text-gray-500 mt-1">Enter in your local currency</p>
                 </div>
+                <div>
+                  <Label htmlFor="currency" className="text-base font-medium">What's your preferred currency?</Label>
+                  <Select value={userData.currency} onValueChange={(value) => handleInputChange("currency", value)}>
+                    <SelectTrigger className="mt-2 h-12 rounded-xl border-2 focus:border-blue-500">
+                      <SelectValue placeholder="Select your currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">USD ($) - US Dollar</SelectItem>
+                      <SelectItem value="EUR">EUR (€) - Euro</SelectItem>
+                      <SelectItem value="GBP">GBP (£) - British Pound</SelectItem>
+                      <SelectItem value="JPY">JPY (¥) - Japanese Yen</SelectItem>
+                      <SelectItem value="INR">INR (₹) - Indian Rupee</SelectItem>
+                      <SelectItem value="CAD">CAD (C$) - Canadian Dollar</SelectItem>
+                      <SelectItem value="AUD">AUD (A$) - Australian Dollar</SelectItem>
+                      <SelectItem value="CHF">CHF - Swiss Franc</SelectItem>
+                      <SelectItem value="CNY">CNY (¥) - Chinese Yuan</SelectItem>
+                      <SelectItem value="KRW">KRW (₩) - South Korean Won</SelectItem>
+                      <SelectItem value="SGD">SGD (S$) - Singapore Dollar</SelectItem>
+                      <SelectItem value="HKD">HKD (HK$) - Hong Kong Dollar</SelectItem>
+                      <SelectItem value="NZD">NZD (NZ$) - New Zealand Dollar</SelectItem>
+                      <SelectItem value="SEK">SEK (kr) - Swedish Krona</SelectItem>
+                      <SelectItem value="NOK">NOK (kr) - Norwegian Krone</SelectItem>
+                      <SelectItem value="DKK">DKK (kr) - Danish Krone</SelectItem>
+                      <SelectItem value="PLN">PLN (zł) - Polish Zloty</SelectItem>
+                      <SelectItem value="CZK">CZK (Kč) - Czech Koruna</SelectItem>
+                      <SelectItem value="HUF">HUF (Ft) - Hungarian Forint</SelectItem>
+                      <SelectItem value="RUB">RUB (₽) - Russian Ruble</SelectItem>
+                      <SelectItem value="BRL">BRL (R$) - Brazilian Real</SelectItem>
+                      <SelectItem value="MXN">MXN ($) - Mexican Peso</SelectItem>
+                      <SelectItem value="ARS">ARS ($) - Argentine Peso</SelectItem>
+                      <SelectItem value="CLP">CLP ($) - Chilean Peso</SelectItem>
+                      <SelectItem value="COP">COP ($) - Colombian Peso</SelectItem>
+                      <SelectItem value="ZAR">ZAR (R) - South African Rand</SelectItem>
+                      <SelectItem value="TRY">TRY (₺) - Turkish Lira</SelectItem>
+                      <SelectItem value="THB">THB (฿) - Thai Baht</SelectItem>
+                      <SelectItem value="MYR">MYR (RM) - Malaysian Ringgit</SelectItem>
+                      <SelectItem value="IDR">IDR (Rp) - Indonesian Rupiah</SelectItem>
+                      <SelectItem value="PHP">PHP (₱) - Philippine Peso</SelectItem>
+                      <SelectItem value="VND">VND (₫) - Vietnamese Dong</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-gray-500 mt-1">This will be used for all calculations and displays</p>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -307,7 +354,7 @@ export default function SetupPage() {
                   <Label htmlFor="expenses">Monthly expenses (optional)</Label>
                   <Textarea
                     id="expenses"
-                    placeholder="Rent: $1200, Food: $400, Transport: $200..."
+                    placeholder="Rent: 1200, Food: 400, Transport: 200..."
                     value={userData.expenses}
                     onChange={(e) => handleInputChange("expenses", e.target.value)}
                   />

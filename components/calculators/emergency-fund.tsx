@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
 import { Shield, AlertTriangle, CheckCircle } from "lucide-react"
+import { CurrencyDisplay } from "@/components/ui/currency"
+import { useFormatCurrency } from "@/hooks/use-currency"
 
 export function EmergencyFundCalculator() {
   const [monthlyExpenses, setMonthlyExpenses] = useState("4000")
@@ -14,6 +16,7 @@ export function EmergencyFundCalculator() {
   const [jobStability, setJobStability] = useState("stable")
   const [dependents, setDependents] = useState("0")
   const [monthlySavings, setMonthlySavings] = useState("500")
+  const formatCurrency = useFormatCurrency()
 
   const calculateEmergencyFund = () => {
     const expenses = Number.parseFloat(monthlyExpenses) || 0
@@ -168,7 +171,9 @@ export function EmergencyFundCalculator() {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Target Amount:</span>
-              <span className="font-semibold text-blue-600">${result.targetAmount.toLocaleString()}</span>
+              <span className="font-semibold text-blue-600">
+                <CurrencyDisplay amount={result.targetAmount} />
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Current Coverage:</span>
@@ -178,7 +183,9 @@ export function EmergencyFundCalculator() {
               <>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Amount Needed:</span>
-                  <span className="font-semibold text-orange-600">${result.shortfall.toLocaleString()}</span>
+                  <span className="font-semibold text-orange-600">
+                    <CurrencyDisplay amount={result.shortfall} />
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Time to Target:</span>
@@ -228,7 +235,7 @@ export function EmergencyFundCalculator() {
                     <span className="text-sm font-medium">{category.name}</span>
                     <span className="text-xs text-gray-500 ml-2">({category.percentage}%)</span>
                   </div>
-                  <span className="text-sm font-semibold">${category.amount.toFixed(0)}</span>
+                  <span className="text-sm font-semibold">{formatCurrency(category.amount)}</span>
                 </div>
               ))}
             </div>

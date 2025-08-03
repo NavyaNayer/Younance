@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { TrendingUp, TrendingDown, Target, PiggyBank, Calendar, Zap, Star } from "lucide-react"
+import { useFormatCurrency } from "@/hooks/use-currency"
 
 interface DashboardStatsProps {
   userData: any
@@ -17,11 +18,12 @@ export function DashboardStats({ userData, userProgress, projectedValue, progres
   const monthlySavings = Number.parseFloat(userData.monthlySavings) || 0
   const income = Number.parseFloat(userData.income) || 0
   const savingsRate = ((monthlySavings * 12) / income) * 100
+  const formatCurrency = useFormatCurrency()
 
   const stats = [
     {
       title: "Current Savings",
-      value: `$${currentSavings.toLocaleString()}`,
+      value: formatCurrency(currentSavings),
       change: "+12.5%",
       changeType: "positive" as const,
       icon: PiggyBank,
@@ -29,7 +31,7 @@ export function DashboardStats({ userData, userProgress, projectedValue, progres
     },
     {
       title: "Projected Value",
-      value: `$${Math.round(projectedValue).toLocaleString()}`,
+      value: formatCurrency(Math.round(projectedValue)),
       change: `${progressPercentage.toFixed(1)}% of goal`,
       changeType: progressPercentage >= 100 ? "positive" : ("neutral" as const),
       icon: TrendingUp,
@@ -37,7 +39,7 @@ export function DashboardStats({ userData, userProgress, projectedValue, progres
     },
     {
       title: "Monthly Savings",
-      value: `$${monthlySavings.toLocaleString()}`,
+      value: formatCurrency(monthlySavings),
       change: `${savingsRate.toFixed(1)}% of income`,
       changeType: savingsRate >= 20 ? "positive" : ("neutral" as const),
       icon: Calendar,

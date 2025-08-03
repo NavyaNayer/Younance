@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Target, TrendingUp, Calendar } from "lucide-react"
+import { CurrencyDisplay } from '@/components/ui/currency'
 
 interface UserData {
   name: string
@@ -91,7 +92,7 @@ export function GoalProgress({ userData }: GoalProgressProps) {
           <div className="text-4xl mb-2">{getGoalEmoji(userData.goal)}</div>
           <h3 className="font-semibold text-lg capitalize">{userData.goal}</h3>
           <p className="text-gray-600">
-            ${goalAmount.toLocaleString()} by age {futureAge}
+            <CurrencyDisplay amount={goalAmount} /> by age {futureAge}
           </p>
         </div>
 
@@ -109,7 +110,9 @@ export function GoalProgress({ userData }: GoalProgressProps) {
           <div className="text-center p-3 bg-green-50 rounded-lg">
             <TrendingUp className="h-5 w-5 text-green-600 mx-auto mb-1" />
             <p className="text-sm text-gray-600">Projected Value</p>
-            <p className="font-semibold text-green-600">${Math.round(projectedValue).toLocaleString()}</p>
+            <p className="font-semibold text-green-600">
+              <CurrencyDisplay amount={Math.round(projectedValue)} />
+            </p>
           </div>
           <div className="text-center p-3 bg-blue-50 rounded-lg">
             <Calendar className="h-5 w-5 text-blue-600 mx-auto mb-1" />
@@ -124,7 +127,7 @@ export function GoalProgress({ userData }: GoalProgressProps) {
             <div className="text-center">
               <p className="text-green-600 font-semibold mb-2">🎉 Congratulations!</p>
               <p className="text-sm text-gray-600">
-                You're on track to exceed your goal by ${Math.round(surplus).toLocaleString()}! Your future self will
+                You're on track to exceed your goal by <CurrencyDisplay amount={Math.round(surplus)} />! Your future self will
                 thank you for starting early.
               </p>
             </div>

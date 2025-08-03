@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { SidebarLayout } from '@/components/sidebar'
+import { CurrencyProvider } from '@/hooks/use-currency'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -38,9 +39,11 @@ html {
         `}</style>
       </head>
       <body className="font-sans antialiased bg-white text-gray-900 leading-relaxed">
-        <SidebarLayout>
-          {children}
-        </SidebarLayout>
+        <CurrencyProvider>
+          <SidebarLayout>
+            {children}
+          </SidebarLayout>
+        </CurrencyProvider>
       </body>
     </html>
   )

@@ -6,12 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
+import { CurrencyDisplay } from "@/components/ui/currency"
+import { useFormatCurrency } from "@/hooks/use-currency"
 
 export function MortgageCalculator() {
   const [homePrice, setHomePrice] = useState("400000")
   const [downPayment, setDownPayment] = useState("80000")
   const [interestRate, setInterestRate] = useState("6.5")
   const [loanTerm, setLoanTerm] = useState("30")
+  const formatCurrency = useFormatCurrency()
 
   const calculateMortgage = () => {
     const price = Number.parseFloat(homePrice) || 0
@@ -107,19 +110,23 @@ export function MortgageCalculator() {
           <div className="pt-4 border-t space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-600">Loan Amount:</span>
-              <span className="font-semibold">${result.loanAmount.toLocaleString()}</span>
+              <CurrencyDisplay amount={result.loanAmount} />
             </div>
             <div className="flex justify-between text-lg">
               <span className="font-semibold">Monthly Payment:</span>
-              <span className="font-bold text-blue-600">${result.monthlyPayment.toLocaleString()}</span>
+              <span className="font-bold text-blue-600">
+                <CurrencyDisplay amount={result.monthlyPayment} />
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Total Interest:</span>
-              <span className="font-semibold text-red-600">${result.totalInterest.toLocaleString()}</span>
+              <span className="font-semibold text-red-600">
+                <CurrencyDisplay amount={result.totalInterest} />
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Total Payments:</span>
-              <span className="font-semibold">${result.totalPayments.toLocaleString()}</span>
+              <CurrencyDisplay amount={result.totalPayments} />
             </div>
           </div>
 
@@ -128,7 +135,7 @@ export function MortgageCalculator() {
             <h4 className="font-semibold mb-2">Additional Monthly Costs to Consider:</h4>
             <ul className="text-sm text-gray-600 space-y-1">
               <li>• Property taxes (~1-2% of home value annually)</li>
-              <li>• Home insurance (~$1,000-2,000 annually)</li>
+              <li>• Home insurance (~1,000-2,000 annually)</li>
               <li>• PMI if down payment {"<"} 20%</li>
               <li>• HOA fees (if applicable)</li>
               <li>• Maintenance and repairs (~1% of home value annually)</li>
@@ -167,7 +174,7 @@ export function MortgageCalculator() {
                       return (
                         <div className="bg-white p-3 border rounded-lg shadow-lg">
                           <p className="font-semibold">{data.payload.name}</p>
-                          <p className="text-blue-600">${Number(data.value).toLocaleString()}</p>
+                          <p className="text-blue-600">{formatCurrency(Number(data.value))}</p>
                         </div>
                       )
                     }

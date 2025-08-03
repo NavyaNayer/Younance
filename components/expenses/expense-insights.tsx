@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import { TrendingUp, TrendingDown, AlertTriangle, Target, Calendar } from "lucide-react"
+import { CurrencyDisplay } from "@/components/ui/currency"
+import { useFormatCurrency } from "@/hooks/use-currency"
 import type { Expense, Budget } from "@/app/expenses/page"
 
 interface ExpenseInsightsProps {
@@ -12,6 +14,8 @@ interface ExpenseInsightsProps {
 }
 
 export function ExpenseInsights({ expenses, budgets }: ExpenseInsightsProps) {
+  const formatCurrency = useFormatCurrency()
+  
   // Calculate monthly trends (last 6 months)
   const monthlyTrends = Array.from({ length: 6 }, (_, i) => {
     const date = new Date()
@@ -106,11 +110,11 @@ export function ExpenseInsights({ expenses, budgets }: ExpenseInsightsProps) {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={monthlyTrends}>
                 <XAxis dataKey="month" tickLine={false} axisLine={false} />
-                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value / 1000, { showSymbol: false }) + 'k'} />
                 <ChartTooltip
                   content={<ChartTooltipContent />}
                   formatter={(value, name) => [
-                    `$${Number(value).toLocaleString()}`,
+                    formatCurrency(Number(value)),
                     name === "expenses" ? "Expenses" : "Income",
                   ]}
                 />
@@ -143,7 +147,7 @@ export function ExpenseInsights({ expenses, budgets }: ExpenseInsightsProps) {
             </div>
             <p className="text-sm text-gray-600 mt-1">{monthlyChange >= 0 ? "Increase" : "Decrease"} from last month</p>
             <p className="text-xs text-gray-500 mt-2">
-              Current: ${currentTotal.toLocaleString()} | Last: ${lastTotal.toLocaleString()}
+              Current: <CurrencyDisplay amount={currentTotal} /> | Last: <CurrencyDisplay amount={lastTotal} />
             </p>
           </CardContent>
         </Card>
@@ -176,9 +180,13 @@ export function ExpenseInsights({ expenses, budgets }: ExpenseInsightsProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">${projectedMonthlySpending.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-purple-600">
+              <CurrencyDisplay amount={projectedMonthlySpending} />
+            </div>
             <p className="text-sm text-gray-600 mt-1">Projected monthly total</p>
-            <p className="text-xs text-gray-500 mt-2">Based on ${avgDailySpending.toFixed(0)}/day average</p>
+            <p className="text-xs text-gray-500 mt-2">
+              Based on <CurrencyDisplay amount={avgDailySpending} />/day average
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -207,7 +215,9 @@ export function ExpenseInsights({ expenses, budgets }: ExpenseInsightsProps) {
                       <span className="font-medium">{category}</span>
                     </div>
                     <div className="text-right">
-                      <div className="font-semibold">${amount.toLocaleString()}</div>
+                      <div className="font-semibold">
+                        <CurrencyDisplay amount={amount} />
+                      </div>
                       <div className="text-sm text-gray-500">{((amount / currentTotal) * 100).toFixed(1)}%</div>
                     </div>
                   </div>
@@ -258,8 +268,8 @@ export function ExpenseInsights({ expenses, budgets }: ExpenseInsightsProps) {
                   <div>
                     <h4 className="font-medium text-yellow-900">Projection Warning</h4>
                     <p className="text-sm text-yellow-700">
-                      At current pace, you'll exceed your monthly budget by $
-                      {(projectedMonthlySpending - totalBudget).toLocaleString()}.
+                      At current pace, you'll exceed your monthly budget by{" "}
+                      <CurrencyDisplay amount={projectedMonthlySpending - totalBudget} />.
                     </p>
                   </div>
                 </div>

@@ -5,12 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CurrencyDisplay } from "@/components/ui/currency"
+import { useFormatCurrency } from "@/hooks/use-currency"
 
 export function LoanCalculator() {
   const [loanAmount, setLoanAmount] = useState("25000")
   const [interestRate, setInterestRate] = useState("7")
   const [loanTerm, setLoanTerm] = useState("5")
   const [loanType, setLoanType] = useState("personal")
+  const formatCurrency = useFormatCurrency()
 
   const calculateLoan = () => {
     const principal = Number.parseFloat(loanAmount) || 0
@@ -139,15 +142,19 @@ export function LoanCalculator() {
           <div className="pt-4 border-t space-y-3">
             <div className="flex justify-between text-lg">
               <span className="font-semibold">Monthly Payment:</span>
-              <span className="font-bold text-blue-600">${result.monthlyPayment.toLocaleString()}</span>
+              <span className="font-bold text-blue-600">
+                <CurrencyDisplay amount={result.monthlyPayment} />
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Total Interest:</span>
-              <span className="font-semibold text-red-600">${result.totalInterest.toLocaleString()}</span>
+              <span className="font-semibold text-red-600">
+                <CurrencyDisplay amount={result.totalInterest} />
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Total Payments:</span>
-              <span className="font-semibold">${result.totalPayments.toLocaleString()}</span>
+              <CurrencyDisplay amount={result.totalPayments} />
             </div>
           </div>
 
@@ -187,10 +194,10 @@ export function LoanCalculator() {
                 {schedule.map((row) => (
                   <tr key={row.month} className="border-b">
                     <td className="p-2">{row.month}</td>
-                    <td className="text-right p-2">${row.payment.toFixed(0)}</td>
-                    <td className="text-right p-2 text-blue-600">${row.principal.toFixed(0)}</td>
-                    <td className="text-right p-2 text-red-600">${row.interest.toFixed(0)}</td>
-                    <td className="text-right p-2">${row.balance.toFixed(0)}</td>
+                    <td className="text-right p-2">{formatCurrency(row.payment)}</td>
+                    <td className="text-right p-2 text-blue-600">{formatCurrency(row.principal)}</td>
+                    <td className="text-right p-2 text-red-600">{formatCurrency(row.interest)}</td>
+                    <td className="text-right p-2">{formatCurrency(row.balance)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Trash2, Search, Filter, TrendingDown, TrendingUp } from "lucide-react"
+import { CurrencyDisplay } from "@/components/ui/currency"
 import type { Expense } from "@/app/expenses/page"
 
 interface ExpenseListProps {
@@ -144,7 +145,8 @@ export function ExpenseList({ expenses, onDeleteExpense }: ExpenseListProps) {
                 </div>
                 <div className="flex items-center space-x-3">
                   <span className={`font-semibold ${expense.type === "expense" ? "text-red-600" : "text-green-600"}`}>
-                    {expense.type === "expense" ? "-" : "+"}${expense.amount.toLocaleString()}
+                    {expense.type === "expense" ? "-" : "+"}
+                    <CurrencyDisplay amount={expense.amount} />
                   </span>
                   <Button
                     variant="ghost"
@@ -171,21 +173,17 @@ export function ExpenseList({ expenses, onDeleteExpense }: ExpenseListProps) {
               <div>
                 <p className="text-sm text-gray-600">Total Expenses</p>
                 <p className="text-lg font-semibold text-red-600">
-                  -$
-                  {filteredExpenses
+                  -<CurrencyDisplay amount={filteredExpenses
                     .filter((e) => e.type === "expense")
-                    .reduce((sum, e) => sum + e.amount, 0)
-                    .toLocaleString()}
+                    .reduce((sum, e) => sum + e.amount, 0)} />
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Total Income</p>
                 <p className="text-lg font-semibold text-green-600">
-                  +$
-                  {filteredExpenses
+                  +<CurrencyDisplay amount={filteredExpenses
                     .filter((e) => e.type === "income")
-                    .reduce((sum, e) => sum + e.amount, 0)
-                    .toLocaleString()}
+                    .reduce((sum, e) => sum + e.amount, 0)} />
                 </p>
               </div>
             </div>

@@ -3,6 +3,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { CurrencyDisplay } from '@/components/ui/currency'
+import { useFormatCurrency } from '@/hooks/use-currency'
 
 interface UserData {
   name: string
@@ -22,6 +24,7 @@ interface GrowthChartProps {
 }
 
 export function GrowthChart({ userData }: GrowthChartProps) {
+  const formatCurrency = useFormatCurrency()
   const getReturnRate = () => {
     switch (userData.riskTolerance) {
       case "conservative":
@@ -95,7 +98,9 @@ export function GrowthChart({ userData }: GrowthChartProps) {
           <div className="flex items-center space-x-2 ml-6">
             <div className="text-right">
               <div className="text-sm font-medium text-gray-500 uppercase tracking-wide">Projected Value</div>
-              <div className="text-2xl font-bold text-green-600 tabular-nums">${Math.round(projectedValue).toLocaleString()}</div>
+              <div className="text-2xl font-bold text-green-600 tabular-nums">
+                <CurrencyDisplay amount={Math.round(projectedValue)} />
+              </div>
             </div>
           </div>
         </div>
@@ -115,13 +120,13 @@ export function GrowthChart({ userData }: GrowthChartProps) {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                tickFormatter={(value) => formatCurrency(value / 1000, { showSymbol: false }) + 'k'}
                 className="text-sm font-medium text-gray-600 tabular-nums"
               />
               <ChartTooltip
                 content={<ChartTooltipContent />}
                 formatter={(value, name) => [
-                  `$${Number(value).toLocaleString()}`,
+                  formatCurrency(Number(value)),
                   name === "value" ? "Portfolio Value" : "Total Contributions",
                 ]}
                 labelFormatter={(label) => `Year ${label}`}

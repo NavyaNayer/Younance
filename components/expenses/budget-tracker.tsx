@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { Edit2, Check, X, AlertTriangle, CheckCircle } from "lucide-react"
+import { CurrencyDisplay } from "@/components/ui/currency"
 import type { Budget } from "@/app/expenses/page"
 
 interface BudgetTrackerProps {
@@ -60,7 +61,7 @@ export function BudgetTracker({ budgets, onUpdateBudget, editable = false }: Bud
           <div className="flex justify-between items-center mb-2">
             <span className="font-semibold">Overall Budget</span>
             <span className="text-sm text-gray-600">
-              ${totalSpent.toLocaleString()} / ${totalBudgeted.toLocaleString()}
+              <CurrencyDisplay amount={totalSpent} /> / <CurrencyDisplay amount={totalBudgeted} />
             </span>
           </div>
           <Progress value={Math.min(overallProgress, 100)} className="h-3" />
@@ -69,7 +70,7 @@ export function BudgetTracker({ budgets, onUpdateBudget, editable = false }: Bud
               {overallProgress.toFixed(1)}% used
             </span>
             <span className={overallProgress > 100 ? "text-red-600" : "text-green-600"}>
-              ${Math.abs(totalBudgeted - totalSpent).toLocaleString()} {overallProgress > 100 ? "over" : "remaining"}
+              <CurrencyDisplay amount={Math.abs(totalBudgeted - totalSpent)} /> {overallProgress > 100 ? "over" : "remaining"}
             </span>
           </div>
         </div>
@@ -135,14 +136,18 @@ export function BudgetTracker({ budgets, onUpdateBudget, editable = false }: Bud
                   <Progress value={Math.min(percentage, 100)} className="h-2" />
 
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">${budget.spent.toLocaleString()} spent</span>
-                    <span className="text-gray-600">${budget.budgeted.toLocaleString()} budgeted</span>
+                    <span className="text-gray-600">
+                      <CurrencyDisplay amount={budget.spent} /> spent
+                    </span>
+                    <span className="text-gray-600">
+                      <CurrencyDisplay amount={budget.budgeted} /> budgeted
+                    </span>
                   </div>
 
                   <div className={`text-sm font-medium ${status.color}`}>
                     {remaining >= 0
-                      ? `$${remaining.toLocaleString()} remaining (${(100 - percentage).toFixed(1)}%)`
-                      : `$${Math.abs(remaining).toLocaleString()} over budget (${(percentage - 100).toFixed(1)}% over)`}
+                      ? <><CurrencyDisplay amount={remaining} /> remaining ({(100 - percentage).toFixed(1)}%)</>
+                      : <><CurrencyDisplay amount={Math.abs(remaining)} /> over budget ({(percentage - 100).toFixed(1)}% over)</>}
                   </div>
                 </div>
               </div>

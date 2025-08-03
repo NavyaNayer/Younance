@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from "recharts"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CurrencyDisplay } from "@/components/ui/currency"
+import { useFormatCurrency } from "@/hooks/use-currency"
 import type { Expense } from "@/app/expenses/page"
 
 interface ExpenseChartProps {
@@ -11,6 +13,7 @@ interface ExpenseChartProps {
 }
 
 export function ExpenseChart({ expenses }: ExpenseChartProps) {
+  const formatCurrency = useFormatCurrency()
   const expenseData = expenses.filter((expense) => expense.type === "expense")
 
   // Category breakdown
@@ -104,7 +107,9 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
                             return (
                               <div className="bg-white p-3 border rounded-lg shadow-lg">
                                 <p className="font-semibold">{data.payload.category}</p>
-                                <p className="text-blue-600">${Number(data.value).toLocaleString()}</p>
+                                <p className="text-blue-600">
+                                  <CurrencyDisplay amount={Number(data.value)} />
+                                </p>
                                 <p className="text-sm text-gray-500">
                                   {(
                                     (Number(data.value) / categoryData.reduce((sum, item) => sum + item.amount, 0)) *
@@ -130,7 +135,9 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
                         style={{ backgroundColor: colors[index % colors.length] }}
                       ></div>
                       <span className="truncate">{item.category}</span>
-                      <span className="font-semibold ml-auto">${item.amount.toLocaleString()}</span>
+                      <span className="font-semibold ml-auto">
+                        <CurrencyDisplay amount={item.amount} />
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -148,10 +155,10 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dailyData}>
                   <XAxis dataKey="date" tickLine={false} axisLine={false} fontSize={12} />
-                  <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} fontSize={12} />
+                  <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value, { showSymbol: false })} fontSize={12} />
                   <ChartTooltip
                     content={<ChartTooltipContent />}
-                    formatter={(value) => [`$${Number(value).toLocaleString()}`, "Spent"]}
+                    formatter={(value) => [formatCurrency(Number(value)), "Spent"]}
                   />
                   <Bar dataKey="amount" fill="var(--color-amount)" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -162,7 +169,7 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
               <p className="text-sm text-gray-600">
                 Total spent in last 7 days:
                 <span className="font-semibold ml-1">
-                  ${dailyData.reduce((sum, day) => sum + day.amount, 0).toLocaleString()}
+                  <CurrencyDisplay amount={dailyData.reduce((sum, day) => sum + day.amount, 0)} />
                 </span>
               </p>
             </div>

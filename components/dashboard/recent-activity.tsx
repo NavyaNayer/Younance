@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Activity, TrendingDown, Trophy, Target, Star, Calendar, CheckCircle } from "lucide-react"
+import { CurrencyDisplay } from "@/components/ui/currency"
 
 interface ActivityItem {
   id: string
@@ -21,9 +22,9 @@ export function RecentActivity() {
       id: "1",
       type: "expense",
       title: "Grocery Shopping",
-      description: "Added $127.50 expense",
+      description: "Added expense",
       timestamp: "2 hours ago",
-      value: "-$127.50",
+      value: "-127.50",
       icon: TrendingDown,
       color: "text-red-600 bg-red-50",
     },
@@ -112,7 +113,8 @@ export function RecentActivity() {
                     <h4 className="font-semibold text-gray-900 text-sm truncate">{activity.title}</h4>
                     {activity.value && (
                       <Badge variant="secondary" className={`text-xs ml-2 ${activity.color}`}>
-                        {activity.value}
+                        {activity.value.startsWith('-') ? '-' : '+'}
+                        <CurrencyDisplay amount={Math.abs(parseFloat(activity.value))} />
                       </Badge>
                     )}
                   </div>

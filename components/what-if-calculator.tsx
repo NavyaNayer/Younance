@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Calculator, TrendingUp, TrendingDown } from "lucide-react"
+import { CurrencyDisplay } from '@/components/ui/currency'
 
 interface UserData {
   name: string
@@ -71,7 +72,7 @@ export function WhatIfCalculator({ userData }: WhatIfCalculatorProps) {
 
   const scenarios = [
     {
-      title: "Save $100 more per month",
+      title: "Save more per month",
       monthlySavings: (Number.parseFloat(userData.monthlySavings) || 0) + 100,
       timeframe: Number.parseInt(userData.timeframe) || 10,
     },
@@ -81,7 +82,7 @@ export function WhatIfCalculator({ userData }: WhatIfCalculatorProps) {
       timeframe: (Number.parseInt(userData.timeframe) || 10) + 5,
     },
     {
-      title: "Save $200 more + 2 extra years",
+      title: "Save more + extra years",
       monthlySavings: (Number.parseFloat(userData.monthlySavings) || 0) + 200,
       timeframe: (Number.parseInt(userData.timeframe) || 10) + 2,
     },
@@ -102,9 +103,11 @@ export function WhatIfCalculator({ userData }: WhatIfCalculatorProps) {
           <div className="p-4 bg-emerald-50 rounded-lg">
             <h3 className="font-semibold text-emerald-900 mb-2">Your Current Plan</h3>
             <p className="text-emerald-700">
-              Save ${userData?.monthlySavings || 500} per month for {userData?.timeframe || 10} years at {(getReturnRate() * 100).toFixed(1)}% annual return
+              Save <CurrencyDisplay amount={userData?.monthlySavings || 500} /> per month for {userData?.timeframe || 10} years at {(getReturnRate() * 100).toFixed(1)}% annual return
             </p>
-            <p className="text-2xl font-bold text-emerald-900 mt-2">${Math.round(originalValue).toLocaleString()}</p>
+            <p className="text-2xl font-bold text-emerald-900 mt-2">
+              <CurrencyDisplay amount={Math.round(originalValue)} />
+            </p>
           </div>
 
           {/* What-If Inputs */}
@@ -137,14 +140,14 @@ export function WhatIfCalculator({ userData }: WhatIfCalculatorProps) {
                   What-If Scenario
                 </h3>
                 <p className={`text-2xl font-bold mt-2 ${difference >= 0 ? "text-green-900" : "text-red-900"}`}>
-                  ${Math.round(whatIfValue).toLocaleString()}
+                  <CurrencyDisplay amount={Math.round(whatIfValue)} />
                 </p>
               </div>
               <div className="text-right">
                 <div className={`flex items-center space-x-1 ${difference >= 0 ? "text-green-600" : "text-red-600"}`}>
                   {difference >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
                   <span className="font-semibold">
-                    {difference >= 0 ? "+" : ""}${Math.round(difference).toLocaleString()}
+                    {difference >= 0 ? "+" : ""}<CurrencyDisplay amount={Math.round(difference)} />
                   </span>
                 </div>
                 <p className={`text-sm ${difference >= 0 ? "text-green-600" : "text-red-600"}`}>
@@ -176,15 +179,17 @@ export function WhatIfCalculator({ userData }: WhatIfCalculatorProps) {
                     <div>
                       <h4 className="font-medium">{scenario.title}</h4>
                       <p className="text-sm text-gray-600">
-                        ${scenario.monthlySavings.toLocaleString()}/month for {scenario.timeframe} years
+                        <CurrencyDisplay amount={scenario.monthlySavings} />/month for {scenario.timeframe} years
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-lg">${Math.round(scenarioValue).toLocaleString()}</p>
+                      <p className="font-bold text-lg">
+                        <CurrencyDisplay amount={Math.round(scenarioValue)} />
+                      </p>
                       <div className="flex items-center space-x-1 text-green-600">
                         <TrendingUp className="h-4 w-4" />
                         <span className="text-sm font-medium">
-                          +${Math.round(scenarioDifference).toLocaleString()} ({scenarioPercentage.toFixed(1)}%)
+                          +<CurrencyDisplay amount={Math.round(scenarioDifference)} /> ({scenarioPercentage.toFixed(1)}%)
                         </span>
                       </div>
                     </div>

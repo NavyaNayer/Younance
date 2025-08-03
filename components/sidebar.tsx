@@ -287,14 +287,70 @@ interface SidebarLayoutProps {
 
 export function SidebarLayout({ children, showSidebar = true }: SidebarLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [userData, setUserData] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const pathname = usePathname()
 
-  // Always show sidebar - remove the landing page exception
-  const shouldShowSidebar = showSidebar
+  // Load user data to check if setup is complete
+  useEffect(() => {
+    const loadUserData = () => {
+      const savedData = localStorage.getItem("younance-user-data")
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData)
+          console.log("Loaded user data:", parsedData) // Debug log
+          setUserData(parsedData)
+        } catch (error) {
+          console.error("Failed to parse user data:", error)
+        }
+      }
+      setIsLoading(false)
+    }
+
+    loadUserData()
+
+    // Listen for storage changes (when user completes setup)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "younance-user-data") {
+        loadUserData()
+      }
+    }
+
+    // Listen for custom events (for same-tab updates)
+    const handleCustomStorageChange = () => {
+      loadUserData()
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('younance-data-updated', handleCustomStorageChange)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('younance-data-updated', handleCustomStorageChange)
+    }
+  }, [])
+
+  // Re-check user data when pathname changes (navigation)
+  useEffect(() => {
+    const savedData = localStorage.getItem("younance-user-data")
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData)
+        setUserData(parsedData)
+      } catch (error) {
+        console.error("Failed to parse user data:", error)
+      }
+    }
+  }, [pathname])
+
+  // Hide sidebar on landing page and before setup is complete
+  const isSetupComplete = userData && userData.name && userData.goal && userData.currency
+  console.log("Setup complete check:", { userData, isSetupComplete }) // Debug log
+  const shouldShowSidebar = showSidebar && pathname !== '/' && pathname !== '/setup' && isSetupComplete
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50">
-      {shouldShowSidebar && (
+      {!isLoading && shouldShowSidebar && (
         <>
           {/* Mobile Header - only show on mobile */}
           <div className="lg:hidden bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-30">
@@ -340,7 +396,10 @@ export function SidebarLayout({ children, showSidebar = true }: SidebarLayoutPro
       )}
 
       {/* Main Content */}
-      <div className="lg:ml-80 transition-all duration-300">
+      <div className={cn(
+        "transition-all duration-300",
+        !isLoading && shouldShowSidebar ? "lg:ml-80" : ""
+      )}>
         {children}
       </div>
     </div>

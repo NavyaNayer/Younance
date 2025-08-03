@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { CurrencyDisplay } from "@/components/ui/currency"
+import { useFormatCurrency } from "@/hooks/use-currency"
 
 export function RetirementCalculator() {
   const [currentAge, setCurrentAge] = useState("25")
@@ -15,6 +17,7 @@ export function RetirementCalculator() {
   const [expectedReturn, setExpectedReturn] = useState("8")
   const [inflationRate, setInflationRate] = useState("3")
   const [desiredIncome, setDesiredIncome] = useState("5000")
+  const formatCurrency = useFormatCurrency()
 
   const calculateRetirement = () => {
     const age = Number.parseFloat(currentAge) || 25
@@ -189,16 +192,18 @@ export function RetirementCalculator() {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Projected Savings:</span>
-              <span className="font-semibold text-blue-600">${result.totalRetirementSavings.toLocaleString()}</span>
+              <span className="font-semibold text-blue-600">
+                <CurrencyDisplay amount={result.totalRetirementSavings} />
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Required Savings:</span>
-              <span className="font-semibold">${result.requiredSavings.toLocaleString()}</span>
+              <CurrencyDisplay amount={result.requiredSavings} />
             </div>
             <div className="flex justify-between text-lg">
               <span className="font-semibold">{result.shortfall > 0 ? "Shortfall:" : "Surplus:"}</span>
               <span className={`font-bold ${result.shortfall > 0 ? "text-red-600" : "text-green-600"}`}>
-                ${Math.abs(result.shortfall).toLocaleString()}
+                <CurrencyDisplay amount={Math.abs(result.shortfall)} />
               </span>
             </div>
           </div>
@@ -216,10 +221,10 @@ export function RetirementCalculator() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={projectionData}>
                 <XAxis dataKey="age" tickLine={false} axisLine={false} />
-                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value / 1000, { compact: true }) + "k"} />
                 <ChartTooltip
                   content={<ChartTooltipContent />}
-                  formatter={(value) => [`$${Number(value).toLocaleString()}`, "Retirement Savings"]}
+                  formatter={(value) => [formatCurrency(Number(value)), "Retirement Savings"]}
                   labelFormatter={(label) => `Age ${label}`}
                 />
                 <Line type="monotone" dataKey="value" stroke="var(--color-value)" strokeWidth={3} dot={false} />
