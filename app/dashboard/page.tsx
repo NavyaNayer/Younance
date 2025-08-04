@@ -27,6 +27,7 @@ import {
   Download,
 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { GrowthChart } from "@/components/growth-chart"
 import { GoalProgress } from "@/components/goal-progress"
 import { DashboardStats } from "@/components/dashboard/dashboard-stats"
@@ -166,9 +167,15 @@ export default function DashboardPage() {
       {/* Enhanced Header */}
       <header className="relative z-10 container mx-auto px-4 py-6 overflow-x-hidden">
         <nav className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300">
-              <Sparkles className="h-6 w-6 text-white" />
+          <div className="flex items-center gap-1">
+                        <div className="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300">
+              <Image 
+                src="/logo.png" 
+                alt="YouNance Logo" 
+                width={240} 
+                height={240} 
+                className="object-contain"
+              />
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent tracking-tight">YouNance</h1>

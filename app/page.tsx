@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowRight, TrendingUp, MessageCircle, Calculator, Target, Sparkles, Shield, Users } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false)
@@ -24,13 +25,30 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-amber-400/10 to-yellow-400/10 rounded-full blur-3xl"></div>
       </div>
 
+      {/* Header with Logo and Brand Name */}
+      <header className="relative z-10 container mx-auto px-4 py-6">
+        <div className="flex items-center justify-center">
+          <div className="flex items-center gap-2">
+            <div className="w-16 h-16 rounded-xl flex items-center justify-center">
+              <Image 
+                src="/logo.png" 
+                alt="YouNance Logo" 
+                width={180} 
+                height={180} 
+                className="object-contain"
+              />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">YouNance</h1>
+              <p className="text-sm text-gray-600 font-medium">AI-Powered Financial Planning</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="relative z-10 container mx-auto px-4 py-20 text-center bg-gradient-to-br from-emerald-50/50 via-teal-50/50 to-green-100/50 backdrop-blur-sm rounded-3xl my-8 border border-white/20">
         <div className="max-w-5xl mx-auto">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full px-4 py-2 mb-6 border border-purple-200">
-            <Sparkles className="h-4 w-4 text-purple-600" />
-            <span className="text-sm font-medium text-purple-700">World's First Future Self AI</span>
-          </div>
           <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
             Chat with Your{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-violet-600 animate-gradient">
@@ -167,7 +185,7 @@ export default function LandingPage() {
                   </Button>
                 </Link>
                 <Link href="/chat">
-                  <Button size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg rounded-xl transition-all duration-300">
+                  <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                     Try AI Chat Demo
                   </Button>
                 </Link>
@@ -180,9 +198,15 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="relative z-10 container mx-auto px-4 py-12 text-center">
         <div className="border-t border-gray-200 pt-8">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">Y</span>
+          <div className="flex items-center justify-center gap-0.5 mb-4">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+              <Image 
+                src="/logo.png" 
+                alt="YouNance Logo" 
+                width={160} 
+                height={160} 
+                className="object-contain"
+              />
             </div>
             <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">YouNance</span>
           </div>

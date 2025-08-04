@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -202,9 +203,15 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
         <div className="flex flex-col h-full overflow-x-hidden">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 min-w-0">
-            <Link href="/" className="flex items-center space-x-3 min-w-0 flex-1">
-              <div className="w-10 h-10 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                <span className="text-white font-bold text-lg">Y</span>
+            <Link href="/" className="flex items-center space-x-0.5 min-w-0 flex-1">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Image 
+                  src="/logo.png" 
+                  alt="YouNance Logo" 
+                  width={200} 
+                  height={200} 
+                  className="object-contain"
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent truncate">
@@ -371,9 +378,15 @@ export function SidebarLayout({ children, showSidebar = true }: SidebarLayoutPro
                 <Menu className="h-5 w-5" />
               </Button>
               
-              <Link href="/" className="flex items-center space-x-2 min-w-0 flex-1 justify-center">
-                <div className="w-8 h-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-sm">Y</span>
+              <Link href="/" className="flex items-center gap-0.5 min-w-0 flex-1 justify-center">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Image 
+                    src="/logo.png" 
+                    alt="YouNance Logo" 
+                    width={160} 
+                    height={160} 
+                    className="object-contain"
+                  />
                 </div>
                 <span className="font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent truncate">
                   YouNance

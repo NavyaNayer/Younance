@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { ArrowLeft, ArrowRight, User, DollarSign, Target, Settings, CheckCircle } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 
 interface UserData {
@@ -104,9 +105,15 @@ export default function SetupPage() {
         <nav className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3 group transition-all duration-300">
             <ArrowLeft className="h-5 w-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                <span className="text-white font-bold text-lg">Y</span>
+            <div className="flex items-center gap-0.5">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300">
+                <Image 
+                  src="/logo.png" 
+                  alt="YouNance Logo" 
+                  width={200} 
+                  height={200} 
+                  className="object-contain"
+                />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">YouNance</span>
             </div>
