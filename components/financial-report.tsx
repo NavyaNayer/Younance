@@ -475,6 +475,24 @@ export function FinancialReport({ userData, userProgress, projectedValue, progre
           .print-break { page-break-before: always; }
         }
       `}</style>
+      
+      {/* Feature Header Banner */}
+      <div className="mb-6 text-center">
+        <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-full px-4 py-2 mb-4 border border-emerald-200">
+          <Zap className="h-4 w-4 text-emerald-600" />
+          <span className="text-sm font-medium text-emerald-700">AI-Powered Financial Analysis</span>
+        </div>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          Your Comprehensive{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">
+            Financial Health Report
+          </span>
+        </h1>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          Advanced AI analysis of your financial situation with personalized insights and actionable recommendations for achieving your goals faster.
+        </p>
+      </div>
+
       <div ref={reportRef} className="w-full max-w-6xl mx-auto space-y-6">
       {/* Report Header */}
       <Card>

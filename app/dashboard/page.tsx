@@ -1,9 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { CurrencyDisplay } from "@/components/ui/currency"
@@ -23,10 +22,12 @@ import {
   PiggyBank,
   Sparkles,
   FileText,
+  Bot,
+  BarChart3,
+  Download,
 } from "lucide-react"
 import Link from "next/link"
 import { GrowthChart } from "@/components/growth-chart"
-import { WhatIfCalculator } from "@/components/what-if-calculator"
 import { GoalProgress } from "@/components/goal-progress"
 import { DashboardStats } from "@/components/dashboard/dashboard-stats"
 import { QuickActions } from "@/components/dashboard/quick-actions"
@@ -34,7 +35,6 @@ import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { FinancialInsights } from "@/components/dashboard/financial-insights"
 import { ChallengePreview } from "@/components/dashboard/challenge-preview"
 import { FinancialNews } from "@/components/dashboard/financial-news"
-import { FinancialReport } from "@/components/financial-report"
 
 interface UserData {
   name: string
@@ -71,6 +71,50 @@ export default function DashboardPage() {
   })
   const [mounted, setMounted] = useState(false)
 
+  // Helper functions - must be defined before useMemo
+  const getReturnRate = () => {
+    if (!userData) return 0.09
+    switch (userData?.riskTolerance) {
+      case "conservative":
+        return 0.06
+      case "moderate":
+        return 0.09
+      case "aggressive":
+        return 0.11
+      default:
+        return 0.09
+    }
+  }
+
+  const calculateFutureValue = (years: number) => {
+    if (!userData) return 0
+    const currentSavings = Number.parseFloat(userData.currentSavings) || 0
+    const monthlySavings = Number.parseFloat(userData.monthlySavings) || 0
+    const annualRate = getReturnRate()
+    const monthlyRate = annualRate / 12
+    const months = years * 12
+
+    // Future value of current savings
+    const futureCurrentSavings = currentSavings * Math.pow(1 + annualRate, years)
+
+    // Future value of monthly contributions
+    const futureMonthlySavings = (monthlySavings * (Math.pow(1 + monthlyRate, months) - 1)) / monthlyRate
+
+    return futureCurrentSavings + futureMonthlySavings
+  }
+
+  // Memoize expensive calculations - must be called before any conditional returns
+  const { projectedValue, progressPercentage, targetYears, goalAmount } = useMemo(() => {
+    if (!userData) return { projectedValue: 0, progressPercentage: 0, targetYears: 10, goalAmount: 0 }
+    
+    const targetYears = Number.parseInt(userData.timeframe) || 10
+    const projectedValue = calculateFutureValue(targetYears)
+    const goalAmount = Number.parseFloat(userData.goalAmount) || 0
+    const progressPercentage = goalAmount > 0 ? Math.min((projectedValue / goalAmount) * 100, 100) : 0
+    
+    return { projectedValue, progressPercentage, targetYears, goalAmount }
+  }, [userData])
+
   useEffect(() => {
     setMounted(true)
     const savedData = localStorage.getItem("younance-user-data")
@@ -106,40 +150,6 @@ export default function DashboardPage() {
       </div>
     )
   }
-
-  const getReturnRate = () => {
-    switch (userData.riskTolerance) {
-      case "conservative":
-        return 0.06
-      case "moderate":
-        return 0.09
-      case "aggressive":
-        return 0.11
-      default:
-        return 0.09
-    }
-  }
-
-  const calculateFutureValue = (years: number) => {
-    const currentSavings = Number.parseFloat(userData.currentSavings) || 0
-    const monthlySavings = Number.parseFloat(userData.monthlySavings) || 0
-    const annualRate = getReturnRate()
-    const monthlyRate = annualRate / 12
-    const months = years * 12
-
-    // Future value of current savings
-    const futureCurrentSavings = currentSavings * Math.pow(1 + annualRate, years)
-
-    // Future value of monthly contributions
-    const futureMonthlySavings = (monthlySavings * (Math.pow(1 + monthlyRate, months) - 1)) / monthlyRate
-
-    return futureCurrentSavings + futureMonthlySavings
-  }
-
-  const targetYears = Number.parseInt(userData.timeframe) || 10
-  const projectedValue = calculateFutureValue(targetYears)
-  const goalAmount = Number.parseFloat(userData.goalAmount) || 0
-  const progressPercentage = Math.min((projectedValue / goalAmount) * 100, 100)
 
   // Calculate level progress
   const pointsToNextLevel = userProgress.level * 100 - userProgress.totalPoints
@@ -192,17 +202,17 @@ export default function DashboardPage() {
       </header>
 
       <div className="relative z-10 container mx-auto px-4 py-8">
-        {/* Welcome Section with Level Progress */}
+        {/* Welcome Section with Future You Promotion */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
               <div className="flex items-center space-x-3 mb-3">
                 <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Your Financial Dashboard</h2>
-                <Badge className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-0 animate-pulse">
-                  NEW: Financial Report
+                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 animate-pulse">
+                  ✨ Chat with Future You
                 </Badge>
               </div>
-              <p className="text-xl text-gray-600 font-medium">Track your progress and achieve your financial goals</p>
+              <p className="text-xl text-gray-600 font-medium">Connect with your future self and unlock financial wisdom</p>
             </div>
             <div className="mt-4 md:mt-0 text-left md:text-right">
               <div className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent tabular-nums">{userProgress.totalPoints} pts</div>
@@ -229,6 +239,232 @@ export default function DashboardPage() {
           projectedValue={projectedValue}
           progressPercentage={progressPercentage}
         />
+
+        {/* Future You - Main Feature */}
+        <div className="mb-8">
+          <Card className="overflow-hidden bg-gradient-to-br from-purple-50 via-pink-50 to-violet-50 border-2 border-purple-200/50 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-pink-600/5"></div>
+            <CardHeader className="relative z-10 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+              <CardTitle className="flex items-center space-x-3 text-2xl">
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                  <Sparkles className="h-6 w-6" />
+                </div>
+                <div>
+                  <span>Chat with Your Future Self</span>
+                  <Badge className="ml-3 bg-white/20 text-white border-white/30">
+                    AI Powered
+                  </Badge>
+                </div>
+              </CardTitle>
+              <CardDescription className="text-purple-100 text-lg">
+                Experience wisdom from your {targetYears}-year future self who achieved financial freedom
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="relative z-10 p-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <User className="h-4 w-4 text-purple-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Meet Your Future Self</h4>
+                        <p className="text-gray-600 text-sm">At age {Number.parseInt(userData.age) + targetYears}, you've achieved your <CurrencyDisplay amount={goalAmount} /> goal</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <MessageCircle className="h-4 w-4 text-pink-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Get Personal Wisdom</h4>
+                        <p className="text-gray-600 text-sm">Receive specific advice about your financial journey and life decisions</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <Star className="h-4 w-4 text-violet-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Learn from Success</h4>
+                        <p className="text-gray-600 text-sm">Understand the exact steps that led to your financial independence</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Link href="/chat">
+                    <Button size="lg" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+                      <Sparkles className="h-5 w-5 mr-2" />
+                      Start Conversation with Future You
+                    </Button>
+                  </Link>
+                </div>
+
+                <div className="relative">
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 shadow-lg">
+                    <div className="flex items-start space-x-3 mb-4">
+                      <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-4 border border-purple-200/50">
+                          <p className="text-gray-800 font-medium text-sm italic">
+                            "Hey {userData.name}! It's amazing to look back and see how those small monthly savings of <CurrencyDisplay amount={userData.monthlySavings} /> grew into <CurrencyDisplay amount={Math.round(projectedValue)} />. The compound interest was incredible! You're making all the right moves - keep going! 🚀"
+                          </p>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">Future {userData.name} • Age {Number.parseInt(userData.age) + targetYears}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center py-4">
+                      <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600/10 to-pink-600/10 rounded-full px-4 py-2 border border-purple-200/30">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium text-gray-700">Your future self is online</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* AI Financial Report - Second Main Feature */}
+        <div className="mb-8">
+          <Card className="overflow-hidden bg-gradient-to-br from-emerald-50/80 to-teal-50/80 backdrop-blur-sm border-2 border-emerald-200/50 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-teal-600/5"></div>
+            <CardHeader className="relative z-10 bg-gradient-to-r from-emerald-600 to-teal-600 text-white pb-6">
+              <CardTitle className="flex items-center gap-3 text-2xl">
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                  <FileText className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span>AI Financial Health Report</span>
+                    <Badge className="ml-3 bg-white/20 text-white border-white/30">
+                      AI Powered
+                    </Badge>
+                  </div>
+                  <div className="text-emerald-100 text-sm font-normal mt-1">
+                    Comprehensive analysis with personalized insights and recommendations
+                  </div>
+                </div>
+              </CardTitle>
+              <div className="bg-white/10 rounded-lg p-3 mt-4">
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className="text-emerald-200">Health Score:</span>
+                    <div className="font-semibold text-lg">85/100</div>
+                  </div>
+                  <div>
+                    <span className="text-emerald-200">Analysis:</span>
+                    <div className="font-semibold">Complete</div>
+                  </div>
+                  <div>
+                    <span className="text-emerald-200">Status:</span>
+                    <div className="font-semibold flex items-center gap-1">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      Ready
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10 p-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <BarChart3 className="h-4 w-4 text-emerald-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Complete Financial Analysis</h4>
+                        <p className="text-gray-600 text-sm">AI analyzes 5 key areas: savings rate, debt management, investment strategy, emergency fund, and goal progress</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <Zap className="h-4 w-4 text-teal-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Personalized Recommendations</h4>
+                        <p className="text-gray-600 text-sm">Get specific, actionable advice tailored to your financial situation and goals</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <Download className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Professional PDF Export</h4>
+                        <p className="text-gray-600 text-sm">Download your complete financial report as a professional PDF document</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Link href="/dashboard?tab=report">
+                    <Button size="lg" className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+                      <FileText className="h-5 w-5 mr-2" />
+                      Generate My AI Financial Report
+                    </Button>
+                  </Link>
+                </div>
+
+                <div className="relative">
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 shadow-lg">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">📊 Financial Health Score</span>
+                        <span className="text-2xl font-bold text-emerald-600">85/100</span>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">💰 Savings Rate</span>
+                          <div className="flex items-center gap-2">
+                            <Progress value={90} className="w-16 h-2" />
+                            <span className="font-semibold text-green-600">90%</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">🎯 Goal Progress</span>
+                          <div className="flex items-center gap-2">
+                            <Progress value={progressPercentage} className="w-16 h-2" />
+                            <span className="font-semibold text-emerald-600">{Math.round(progressPercentage)}%</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-600">📈 Investment Strategy</span>
+                          <div className="flex items-center gap-2">
+                            <Progress value={75} className="w-16 h-2" />
+                            <span className="font-semibold text-blue-600">75%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-gray-200">
+                        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg p-3">
+                          <p className="text-xs text-gray-700 font-medium mb-1">💡 AI Insight:</p>
+                          <p className="text-xs text-gray-600 italic">
+                            "Your savings rate is excellent! Consider diversifying 15% into growth investments to accelerate your goal timeline by 2.3 years."
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Quick Actions */}
         <QuickActions />
@@ -371,201 +607,6 @@ export default function DashboardPage() {
             </Card>
           </div>
         </div>
-
-        {/* Detailed Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview" className="flex items-center space-x-2">
-              <TrendingUp className="h-4 w-4" />
-              <span>Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="report" className="flex items-center space-x-2">
-              <FileText className="h-4 w-4" />
-              <span>Report</span>
-            </TabsTrigger>
-            <TabsTrigger value="chat" className="flex items-center space-x-2">
-              <MessageCircle className="h-4 w-4" />
-              <span>Chat</span>
-            </TabsTrigger>
-            <TabsTrigger value="calculator" className="flex items-center space-x-2">
-              <Calculator className="h-4 w-4" />
-              <span>What-If</span>
-            </TabsTrigger>
-            <TabsTrigger value="profile" className="flex items-center space-x-2">
-              <User className="h-4 w-4" />
-              <span>Profile</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid lg:grid-cols-2 gap-6">
-              <GoalProgress userData={userData} />
-
-              {/* Enhanced What-If Preview */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quick What-If Scenario</CardTitle>
-                  <CardDescription>See how small changes impact your future</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="p-4 bg-emerald-50 rounded-lg">
-                      <h4 className="font-semibold text-emerald-900 mb-2">💡 What if you saved <CurrencyDisplay amount={100} /> more per month?</h4>
-                      <div className="text-2xl font-bold text-emerald-600">
-                        +<CurrencyDisplay amount={Math.round(calculateFutureValue(targetYears) * 0.15)} />
-                      </div>
-                      <p className="text-sm text-emerald-700">Additional value in {targetYears} years</p>
-                    </div>
-
-                    <Link href="/dashboard?tab=calculator">
-                      <Button className="w-full bg-transparent" variant="outline">
-                        <Calculator className="h-4 w-4 mr-2" />
-                        Explore More Scenarios
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="report">
-            <FinancialReport 
-              userData={userData}
-              userProgress={userProgress}
-              projectedValue={projectedValue}
-              progressPercentage={progressPercentage}
-            />
-          </TabsContent>
-
-          <TabsContent value="chat">
-            <Card>
-              <CardHeader>
-                <CardTitle>Chat with Your Future Self</CardTitle>
-                <CardDescription>Have a conversation with your future self or ask financial questions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-200">
-                      <h4 className="font-semibold text-purple-900 mb-2">✨ Future You</h4>
-                      <p className="text-sm text-purple-700 mb-3">
-                        Chat with your future self from {targetYears} years ahead
-                      </p>
-                      <Link href="/chat?tab=future-self">
-                        <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                          Start Conversation
-                        </Button>
-                      </Link>
-                    </div>
-
-                    <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
-                      <h4 className="font-semibold text-blue-900 mb-2">🤖 Financial Assistant</h4>
-                      <p className="text-sm text-blue-700 mb-3">
-                        Get expert financial advice and learn about investing
-                      </p>
-                      <Link href="/chat?tab=assistant">
-                        <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
-                          Ask Questions
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="calculator">
-            <WhatIfCalculator userData={userData} />
-          </TabsContent>
-
-          <TabsContent value="profile">
-            <div className="grid lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Your Profile</CardTitle>
-                  <CardDescription>Review and update your financial information</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Name</label>
-                      <p className="text-gray-900 font-semibold">{userData.name}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Age</label>
-                      <p className="text-gray-900 font-semibold">{userData.age} years old</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Annual Income</label>
-                      <p className="text-gray-900 font-semibold">
-                        <CurrencyDisplay amount={userData.income} />
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Monthly Savings</label>
-                      <p className="text-gray-900 font-semibold">
-                        <CurrencyDisplay amount={userData.monthlySavings} />
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Goal</label>
-                      <p className="text-gray-900 font-semibold capitalize">{userData.goal}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Target Amount</label>
-                      <p className="text-gray-900 font-semibold">
-                        <CurrencyDisplay amount={Number.parseFloat(userData.goalAmount)} />
-                      </p>
-                    </div>
-                  </div>
-                  <Link href="/setup">
-                    <Button variant="outline" className="mt-4 bg-transparent">
-                      <Settings className="h-4 w-4 mr-2" />
-                      Update Profile
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-
-              {/* Risk Profile */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Investment Profile</CardTitle>
-                  <CardDescription>Your risk tolerance and investment strategy</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Risk Tolerance</label>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Badge variant={userData.riskTolerance === "conservative" ? "default" : "secondary"}>
-                        {userData.riskTolerance}
-                      </Badge>
-                      <span className="text-sm text-gray-600">
-                        ({(getReturnRate() * 100).toFixed(0)}% expected return)
-                      </span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Investment Timeline</label>
-                    <p className="text-gray-900 font-semibold">{userData.timeframe} years</p>
-                  </div>
-
-                  <div className="pt-4 border-t">
-                    <h4 className="font-semibold mb-2">Recommended Actions</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>• Review your portfolio allocation quarterly</li>
-                      <li>• Consider increasing contributions annually</li>
-                      <li>• Rebalance investments based on market conditions</li>
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   )

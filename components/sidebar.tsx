@@ -55,6 +55,13 @@ const mainNavigationItems = [
     description: "Financial planning tools"
   },
   { 
+    name: "What-If", 
+    href: "/what-if", 
+    icon: TrendingUp,
+    description: "Scenario planning & analysis",
+    badge: "Popular"
+  },
+  { 
     name: "Challenges", 
     href: "/challenges", 
     icon: Target,
