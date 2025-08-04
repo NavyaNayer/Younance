@@ -18,7 +18,7 @@ export function QuickActions() {
       title: "Generate Report",
       description: "AI financial analysis",
       icon: FileText,
-      href: "/dashboard?tab=report",
+      href: "/report",
       color: "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200",
     },
     {

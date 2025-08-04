@@ -408,7 +408,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <Link href="/dashboard?tab=report">
+                  <Link href="/report">
                     <Button size="lg" className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
                       <FileText className="h-5 w-5 mr-2" />
                       Generate My AI Financial Report
