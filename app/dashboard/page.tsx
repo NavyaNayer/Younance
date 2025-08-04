@@ -156,16 +156,16 @@ export default function DashboardPage() {
   const levelProgress = ((userProgress.totalPoints % 100) / 100) * 100
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-100 relative overflow-x-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-emerald-400/10 to-teal-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-green-400/10 to-cyan-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-20 -right-20 w-60 h-60 bg-gradient-to-br from-emerald-400/10 to-teal-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-gradient-to-tr from-green-400/10 to-cyan-400/10 rounded-full blur-3xl"></div>
       </div>
 
       {/* Enhanced Header */}
-      <header className="relative z-10 container mx-auto px-4 py-6">
-        <nav className="flex items-center justify-between">
+      <header className="relative z-10 container mx-auto px-4 py-6 overflow-x-hidden">
+        <nav className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300">
               <Sparkles className="h-6 w-6 text-white" />
@@ -175,47 +175,47 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4 flex-wrap">
             {/* Level Badge */}
-            <div className="flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-xl shadow-lg">
-              <Star className="h-4 w-4" />
-              <span className="text-sm font-semibold">Level {userProgress.level}</span>
+            <div className="flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3 md:px-4 py-2 rounded-xl shadow-lg min-w-0">
+              <Star className="h-4 w-4 flex-shrink-0" />
+              <span className="text-sm font-semibold whitespace-nowrap">Level {userProgress.level}</span>
             </div>
 
             {/* Streak Badge */}
             {userProgress.currentStreak > 0 && (
-              <div className="flex items-center space-x-2 bg-gradient-to-r from-orange-400 to-red-400 text-white px-4 py-2 rounded-xl shadow-lg">
-                <Zap className="h-4 w-4" />
-                <span className="text-sm font-semibold">{userProgress.currentStreak} day streak</span>
+              <div className="flex items-center space-x-2 bg-gradient-to-r from-orange-400 to-red-400 text-white px-3 md:px-4 py-2 rounded-xl shadow-lg min-w-0">
+                <Zap className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm font-semibold whitespace-nowrap">{userProgress.currentStreak} day streak</span>
               </div>
             )}
 
-            <div className="hidden md:block text-right">
-              <span className="text-gray-900 font-semibold text-lg">Welcome back, {userData.name}!</span>
+            <div className="hidden lg:block text-right min-w-0">
+              <span className="text-gray-900 font-semibold text-lg block truncate">Welcome back, {userData.name}!</span>
               <p className="text-sm font-medium text-gray-600 tabular-nums">{userProgress.totalPoints} points earned</p>
             </div>
-            <Button variant="outline" size="sm" className="rounded-xl border-2 hover:shadow-lg transition-all duration-300">
+            <Button variant="outline" size="sm" className="rounded-xl border-2 hover:shadow-lg transition-all duration-300 flex-shrink-0">
               <Settings className="h-4 w-4" />
             </Button>
           </div>
         </nav>
       </header>
 
-      <div className="relative z-10 container mx-auto px-4 py-8">
+      <div className="relative z-10 container mx-auto px-4 py-8 overflow-x-hidden max-w-full">
         {/* Welcome Section with Future You Promotion */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-            <div>
-              <div className="flex items-center space-x-3 mb-3">
-                <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Your Financial Dashboard</h2>
-                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 animate-pulse">
+        <div className="mb-8 max-w-full">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center space-x-3 mb-3 flex-wrap gap-2">
+                <h2 className="text-2xl md:text-4xl font-bold text-gray-900 tracking-tight min-w-0">Your Financial Dashboard</h2>
+                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 animate-pulse whitespace-nowrap flex-shrink-0">
                   ✨ Chat with Future You
                 </Badge>
               </div>
-              <p className="text-xl text-gray-600 font-medium">Connect with your future self and unlock financial wisdom</p>
+              <p className="text-lg md:text-xl text-gray-600 font-medium">Connect with your future self and unlock financial wisdom</p>
             </div>
-            <div className="mt-4 md:mt-0 text-left md:text-right">
-              <div className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent tabular-nums">{userProgress.totalPoints} pts</div>
+            <div className="mt-4 md:mt-0 text-left md:text-right flex-shrink-0">
+              <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent tabular-nums">{userProgress.totalPoints} pts</div>
               <div className="text-sm font-medium text-gray-600">
                 {pointsToNextLevel > 0 ? `${pointsToNextLevel} to level ${userProgress.level + 1}` : "Max level reached!"}
               </div>

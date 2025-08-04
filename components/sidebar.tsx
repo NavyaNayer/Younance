@@ -122,8 +122,8 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
     items: any[]
     showDescriptions?: boolean 
   }) => (
-    <div className="space-y-2">
-      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3">
+    <div className="space-y-2 overflow-x-hidden">
+      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 truncate">
         {title}
       </h3>
       <div className="space-y-1">
@@ -137,7 +137,7 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
               href={item.href}
               onClick={onClose}
               className={cn(
-                "flex items-center justify-between px-3 py-2 mx-2 rounded-lg transition-all duration-200 group",
+                "flex items-center justify-between px-3 py-2 mx-2 rounded-lg transition-all duration-200 group min-w-0",
                 isActive
                   ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg"
                   : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
@@ -164,7 +164,7 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
                 <Badge 
                   variant={isActive ? "secondary" : "outline"} 
                   className={cn(
-                    "text-xs ml-2",
+                    "text-xs ml-2 flex-shrink-0",
                     isActive ? "bg-white/20 text-white border-white/30" : ""
                   )}
                 >
@@ -191,7 +191,7 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
       {/* Sidebar */}
       <div className={cn(
         // Mobile: fixed overlay, Desktop: fixed positioned sidebar
-        "w-80 bg-white border-r border-gray-200 z-50",
+        "w-80 max-w-[80vw] bg-white border-r border-gray-200 z-50 overflow-x-hidden",
         // Mobile positioning and transforms
         "fixed left-0 top-0 h-full transform transition-transform duration-300 ease-in-out lg:transform-none",
         isOpen ? "translate-x-0" : "-translate-x-full",
@@ -199,25 +199,25 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
         "lg:fixed lg:left-0 lg:top-0 lg:translate-x-0",
         className
       )}>
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-x-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 min-w-0">
+            <Link href="/" className="flex items-center space-x-3 min-w-0 flex-1">
+              <div className="w-10 h-10 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
                 <span className="text-white font-bold text-lg">Y</span>
               </div>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent truncate">
                   YouNance
                 </h1>
-                <p className="text-xs text-gray-500">Financial Planning</p>
+                <p className="text-xs text-gray-500 truncate">Financial Planning</p>
               </div>
             </Link>
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="lg:hidden h-8 w-8"
+              className="lg:hidden h-8 w-8 flex-shrink-0"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -225,16 +225,16 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
 
           {/* User Profile Section */}
           {userData && (
-            <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full flex items-center justify-center">
+            <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200 overflow-x-hidden">
+              <div className="flex items-center space-x-3 min-w-0">
+                <div className="w-10 h-10 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="h-5 w-5 text-white" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {userData.name || "Welcome"}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 truncate">
                     Goal: {userData.goal || "Set your goal"}
                   </p>
                 </div>
@@ -243,7 +243,7 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
           )}
 
           {/* Navigation Content */}
-          <div className="flex-1 overflow-y-auto py-4 space-y-6">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 space-y-6">
             {/* Main Navigation */}
             <NavSection title="Main" items={mainNavigationItems} />
             
@@ -267,14 +267,14 @@ export function Sidebar({ isOpen, onClose, className }: SidebarProps) {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200 space-y-2">
+          <div className="p-4 border-t border-gray-200 space-y-2 overflow-x-hidden">
             <Link
               href="/settings"
               onClick={onClose}
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors min-w-0"
             >
-              <Settings className="h-4 w-4" />
-              <span className="text-sm">Settings</span>
+              <Settings className="h-4 w-4 flex-shrink-0" />
+              <span className="text-sm truncate">Settings</span>
             </Link>
             
             <div className="text-center">
@@ -356,31 +356,31 @@ export function SidebarLayout({ children, showSidebar = true }: SidebarLayoutPro
   const shouldShowSidebar = showSidebar && pathname !== '/' && pathname !== '/setup' && isSetupComplete
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 overflow-x-hidden">
       {!isLoading && shouldShowSidebar && (
         <>
           {/* Mobile Header - only show on mobile */}
-          <div className="lg:hidden bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-30">
-            <div className="flex items-center justify-between p-4">
+          <div className="lg:hidden bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-30 overflow-x-hidden">
+            <div className="flex items-center justify-between p-4 min-w-0">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSidebarOpen(true)}
-                className="h-10 w-10"
+                className="h-10 w-10 flex-shrink-0"
               >
                 <Menu className="h-5 w-5" />
               </Button>
               
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
+              <Link href="/" className="flex items-center space-x-2 min-w-0 flex-1 justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-bold text-sm">Y</span>
                 </div>
-                <span className="font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                <span className="font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent truncate">
                   YouNance
                 </span>
               </Link>
               
-              <div className="w-10" /> {/* Spacer for centering */}
+              <div className="w-10 flex-shrink-0" /> {/* Spacer for centering */}
             </div>
           </div>
 
@@ -404,8 +404,8 @@ export function SidebarLayout({ children, showSidebar = true }: SidebarLayoutPro
 
       {/* Main Content */}
       <div className={cn(
-        "transition-all duration-300",
-        !isLoading && shouldShowSidebar ? "lg:ml-80" : ""
+        "transition-all duration-300 overflow-x-hidden min-w-0 w-full",
+        !isLoading && shouldShowSidebar ? "lg:ml-80 lg:w-[calc(100%-20rem)]" : ""
       )}>
         {children}
       </div>

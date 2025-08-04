@@ -73,7 +73,7 @@ const faqItems = [
 export default function HelpPage() {
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-6 max-w-6xl">
+      <div className="container mx-auto px-4 py-6 max-w-6xl overflow-x-hidden">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Help & Support</h1>
