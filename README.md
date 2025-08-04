@@ -4,6 +4,20 @@
 
 YouNance is a revolutionary personal finance platform that combines cutting-edge AI technology with comprehensive financial tools to help you build wealth, make smarter money decisions, and achieve your financial dreams.
 
+## 📸 Screenshots
+
+### 1️⃣ Your Financial Dashboard
+![Financial Dashboard](./Screenshot 2025-08-05 010014.png)
+
+### 2️⃣ Chat with Your Future Self
+![Chat with Future Self](./Screenshot 2025-08-05 010033.png)
+
+### 3️⃣ AI Financial Health Report
+![AI Financial Report](./Screenshot 2025-08-05 010051.png)
+
+### 4️⃣ Goal Tracking & Financial Insights
+![Goal Tracking](./Screenshot 2025-08-05 010106.png
+
 ## 💡 The Big Idea
 
 **What if personal finance wasn't boring, confusing, or overwhelming?**
