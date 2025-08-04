@@ -6,17 +6,19 @@ YouNance is a revolutionary personal finance platform that combines cutting-edge
 
 ## 📸 Screenshots
 
+## 📸 Screenshots
+
 ### 1️⃣ Your Financial Dashboard
-![Financial Dashboard](./screenshot-2025-08-05-010014.png)
+![Financial Dashboard](./dashboard.png)
 
 ### 2️⃣ Chat with Your Future Self
-![Chat with Future Self](./screenshot-2025-08-05-010033.png)
+![Chat with Future Self](./Chatwithfuture.png)
 
 ### 3️⃣ AI Financial Health Report
-![AI Financial Report](./screenshot-2025-08-05-010051.png)
+![AI Financial Report](./healthreport.png)
 
-### 4️⃣ Goal Tracking & Financial Insights
-![Goal Tracking](./screenshot-2025-08-05-010106.png)
+### 4️⃣ What If Scenario
+![What If](./Whatif.png)
 
 ## 💡 The Big Idea
 
