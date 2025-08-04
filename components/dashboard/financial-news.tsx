@@ -199,7 +199,7 @@ export function FinancialNews() {
   }
 
   return (
-    <Card>
+    <Card className="relative">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
@@ -212,19 +212,19 @@ export function FinancialNews() {
         </div>
         <div className="text-xs text-gray-500">Last updated: {lastUpdated.toLocaleTimeString()}</div>
       </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="news" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="news" className="text-xs">
+      <CardContent className="relative">
+        <Tabs defaultValue="news" className="w-full relative">
+          <TabsList className="grid w-full grid-cols-2 relative z-10">
+            <TabsTrigger value="news" className="text-xs relative">
               Latest News
             </TabsTrigger>
-            <TabsTrigger value="market" className="text-xs">
+            <TabsTrigger value="market" className="text-xs relative">
               Market Data
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="news" className="space-y-4 mt-4">
-            <div className="space-y-3 max-h-80 overflow-y-auto">
+            <div className="space-y-3 h-80 overflow-y-auto scrollbar-thin pr-2">
               {newsItems.map((item) => {
                 const CategoryIcon = getCategoryIcon(item.category)
                 return (
@@ -264,7 +264,7 @@ export function FinancialNews() {
           </TabsContent>
 
           <TabsContent value="market" className="space-y-4 mt-4">
-            <div className="space-y-3">
+            <div className="space-y-3 h-80 overflow-y-auto scrollbar-thin pr-2">
               {marketData.map((data) => {
                 const isPositive = data.change > 0
                 const IconComponent = data.icon
@@ -302,7 +302,7 @@ export function FinancialNews() {
               })}
             </div>
 
-            <div className="pt-3 border-t">
+            <div className="pt-3 border-t mt-4">
               <p className="text-xs text-gray-500 text-center">
                 Market data delayed by 15 minutes. For informational purposes only.
               </p>

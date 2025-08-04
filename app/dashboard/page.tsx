@@ -165,7 +165,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Enhanced Header */}
-      <header className="relative z-10 container mx-auto px-4 py-6 overflow-x-hidden">
+      <header className="relative z-10 container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-1">
                         <div className="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300">
@@ -208,7 +208,7 @@ export default function DashboardPage() {
         </nav>
       </header>
 
-      <div className="relative z-10 container mx-auto px-4 py-8 overflow-x-hidden max-w-full">
+      <div className="relative z-10 container mx-auto px-4 py-8 max-w-full">
         {/* Welcome Section with Future You Promotion */}
         <div className="mb-8 max-w-full">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
@@ -477,7 +477,7 @@ export default function DashboardPage() {
         <QuickActions />
 
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid lg:grid-cols-3 gap-6 mb-8 relative">
           {/* Left Column - Charts and Insights */}
           <div className="lg:col-span-2 space-y-6">
             {/* Goal Progress with Enhanced Visual */}
@@ -570,7 +570,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Right Column - Activity, News and Challenges */}
-          <div className="space-y-6">
+          <div className="space-y-6 relative z-10">
             {/* Financial News Widget */}
             <FinancialNews />
 
