@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CurrencyDisplay } from "@/components/ui/currency"
+import { fetchNewsFromRSS, type NewsItem as NewsItemType } from "@/lib/news-service"
 import {
   Newspaper,
   TrendingUp,
@@ -16,19 +17,8 @@ import {
   BarChart3,
   Bitcoin,
   Globe,
+  Loader2,
 } from "lucide-react"
-
-interface NewsItem {
-  id: string
-  title: string
-  summary: string
-  category: "market" | "economy" | "crypto" | "personal"
-  sentiment: "positive" | "negative" | "neutral"
-  impact: "high" | "medium" | "low"
-  source: string
-  timestamp: string
-  url: string
-}
 
 interface MarketData {
   symbol: string
@@ -41,65 +31,28 @@ interface MarketData {
 
 export function FinancialNews() {
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState(new Date())
+  const [newsItems, setNewsItems] = useState<NewsItemType[]>([])
+  const [error, setError] = useState<string | null>(null)
 
-  const newsItems: NewsItem[] = [
-    {
-      id: "1",
-      title: "Fed Signals Potential Rate Cuts in 2024",
-      summary: "Federal Reserve hints at possible interest rate reductions amid cooling inflation data.",
-      category: "economy",
-      sentiment: "positive",
-      impact: "high",
-      source: "Reuters",
-      timestamp: "2 hours ago",
-      url: "#",
-    },
-    {
-      id: "2",
-      title: "S&P 500 Reaches New All-Time High",
-      summary: "Major stock indices continue their upward trajectory as investor confidence grows.",
-      category: "market",
-      sentiment: "positive",
-      impact: "medium",
-      source: "MarketWatch",
-      timestamp: "4 hours ago",
-      url: "#",
-    },
-    {
-      id: "3",
-      title: "401(k) Contribution Limits Increase for 2024",
-      summary: "IRS announces higher contribution limits for retirement accounts, benefiting savers.",
-      category: "personal",
-      sentiment: "positive",
-      impact: "medium",
-      source: "IRS",
-      timestamp: "1 day ago",
-      url: "#",
-    },
-    {
-      id: "4",
-      title: "Bitcoin Volatility Continues Amid Regulatory News",
-      summary: "Cryptocurrency markets show mixed signals following latest regulatory developments.",
-      category: "crypto",
-      sentiment: "neutral",
-      impact: "medium",
-      source: "CoinDesk",
-      timestamp: "6 hours ago",
-      url: "#",
-    },
-    {
-      id: "5",
-      title: "Emergency Fund: Why 6 Months Isn't Always Enough",
-      summary: "Financial experts recommend larger emergency funds in uncertain economic times.",
-      category: "personal",
-      sentiment: "neutral",
-      impact: "low",
-      source: "Financial Planning",
-      timestamp: "1 day ago",
-      url: "#",
-    },
-  ]
+  // Fetch news on component mount and refresh
+  useEffect(() => {
+    loadNews()
+  }, [])
+
+  const loadNews = async () => {
+    try {
+      setError(null)
+      const news = await fetchNewsFromRSS()
+      setNewsItems(news)
+    } catch (err) {
+      setError("Failed to load news")
+      console.error("Error loading news:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const marketData: MarketData[] = [
     {
@@ -192,8 +145,7 @@ export function FinancialNews() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await loadNews()
     setLastUpdated(new Date())
     setIsRefreshing(false)
   }
@@ -225,41 +177,71 @@ export function FinancialNews() {
 
           <TabsContent value="news" className="space-y-4 mt-4">
             <div className="space-y-3 h-80 overflow-y-auto scrollbar-thin pr-2">
-              {newsItems.map((item) => {
-                const CategoryIcon = getCategoryIcon(item.category)
-                return (
-                  <div
-                    key={item.id}
-                    className="p-3 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <CategoryIcon className="h-4 w-4 text-gray-600" />
-                        <Badge className={`text-xs ${getCategoryColor(item.category)}`}>{item.category}</Badge>
-                        <Badge className={`text-xs ${getImpactColor(item.impact)}`}>{item.impact}</Badge>
-                      </div>
-                      <ExternalLink className="h-3 w-3 text-gray-400" />
-                    </div>
-
-                    <h4 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2">{item.title}</h4>
-
-                    <p className="text-xs text-gray-600 mb-2 line-clamp-2">{item.summary}</p>
-
-                    <div className="flex items-center justify-between text-xs">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-gray-500">{item.source}</span>
-                        <span className="text-gray-400">•</span>
-                        <span className="text-gray-500">{item.timestamp}</span>
-                      </div>
-                      <div className={`font-medium ${getSentimentColor(item.sentiment)}`}>
-                        {item.sentiment === "positive" && "↗"}
-                        {item.sentiment === "negative" && "↘"}
-                        {item.sentiment === "neutral" && "→"}
-                      </div>
-                    </div>
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="flex items-center space-x-2 text-gray-500">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm">Loading latest news...</span>
                   </div>
-                )
-              })}
+                </div>
+              ) : error ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center text-gray-500">
+                    <p className="text-sm mb-2">{error}</p>
+                    <Button variant="outline" size="sm" onClick={handleRefresh}>
+                      Try Again
+                    </Button>
+                  </div>
+                </div>
+              ) : newsItems.length === 0 ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-sm text-gray-500">No news available</p>
+                </div>
+              ) : (
+                newsItems.map((item) => {
+                  const CategoryIcon = getCategoryIcon(item.category)
+                  return (
+                    <a
+                      key={item.id}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block p-3 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <CategoryIcon className="h-4 w-4 text-gray-600" />
+                          <Badge className={`text-xs ${getCategoryColor(item.category)}`}>{item.category}</Badge>
+                          <Badge className={`text-xs ${getImpactColor(item.impact)}`}>{item.impact}</Badge>
+                        </div>
+                        <ExternalLink className="h-3 w-3 text-gray-400" />
+                      </div>
+
+                      <h4 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2">{item.title}</h4>
+
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">{item.summary}</p>
+
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-500">{item.source}</span>
+                          <span className="text-gray-400">•</span>
+                          <span className="text-gray-500">{item.timestamp}</span>
+                        </div>
+                        <div className={`font-medium ${getSentimentColor(item.sentiment)}`}>
+                          {item.sentiment === "positive" && "↗"}
+                          {item.sentiment === "negative" && "↘"}
+                          {item.sentiment === "neutral" && "→"}
+                        </div>
+                      </div>
+                    </a>
+                  )
+                })
+              )}
+            </div>
+            <div className="pt-3 border-t mt-4">
+              <p className="text-xs text-gray-500 text-center">
+                Real-time financial news • Click articles to read more
+              </p>
             </div>
           </TabsContent>
 
