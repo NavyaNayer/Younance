@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import { CurrencyDisplay } from '@/components/ui/currency'
-import { useFormatCurrency } from '@/hooks/use-currency'
 
 interface UserData {
   name: string
@@ -24,9 +23,36 @@ interface GrowthChartProps {
 }
 
 export function GrowthChart({ userData }: GrowthChartProps) {
-  const formatCurrency = useFormatCurrency()
+  // Use demo data if no userData
+  const demoData = {
+    name: "Demo User",
+    age: "25",
+    income: "60000",
+    currentSavings: "5000",
+    monthlySavings: "500",
+    goal: "retirement",
+    goalAmount: "1000000",
+    timeframe: "30",
+    riskTolerance: "moderate",
+    expenses: "3000"
+  }
+
+  const effectiveUserData = userData || demoData
+
+  // Simple currency formatter
+  const formatCurrency = (value: number, options?: { showSymbol?: boolean }) => {
+    const showSymbol = options?.showSymbol !== false
+    const formatted = new Intl.NumberFormat('en-US', {
+      style: showSymbol ? 'currency' : 'decimal',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value)
+    return formatted
+  }
+
   const getReturnRate = () => {
-    switch (userData.riskTolerance) {
+    switch (effectiveUserData.riskTolerance) {
       case "conservative":
         return 0.06
       case "moderate":
@@ -39,8 +65,9 @@ export function GrowthChart({ userData }: GrowthChartProps) {
   }
 
   const calculateFutureValue = (years: number) => {
-    const currentSavings = Number.parseFloat(userData.currentSavings) || 0
-    const monthlySavings = Number.parseFloat(userData.monthlySavings) || 0
+    // Use baseline values to ensure chart visibility
+    const currentSavings = Math.max(Number.parseFloat(effectiveUserData.currentSavings || '0') || 0, 1000)
+    const monthlySavings = Math.max(Number.parseFloat(effectiveUserData.monthlySavings || '0') || 0, 100)
     const annualRate = getReturnRate()
     const monthlyRate = annualRate / 12
     const months = years * 12
@@ -49,22 +76,31 @@ export function GrowthChart({ userData }: GrowthChartProps) {
     const futureCurrentSavings = currentSavings * Math.pow(1 + annualRate, years)
 
     // Future value of monthly contributions
-    const futureMonthlySavings = (monthlySavings * (Math.pow(1 + monthlyRate, months) - 1)) / monthlyRate
+    const futureMonthlySavings = monthlySavings > 0 
+      ? (monthlySavings * (Math.pow(1 + monthlyRate, months) - 1)) / monthlyRate
+      : 0
 
     return futureCurrentSavings + futureMonthlySavings
   }
 
   const generateChartData = () => {
     const data = []
-    const maxYears = Math.max(Number.parseInt(userData.timeframe) || 10, 20)
+    const maxYears = Math.max(Number.parseInt(effectiveUserData.timeframe || '10') || 10, 20)
+    const goalAmount = Number.parseFloat(effectiveUserData.goalAmount || '0') || 0
+    
+    // Ensure we have some baseline values for visualization
+    const currentSavings = Math.max(Number.parseFloat(effectiveUserData.currentSavings || '0') || 0, 1000)
+    const monthlySavings = Math.max(Number.parseFloat(effectiveUserData.monthlySavings || '0') || 0, 100)
 
     for (let year = 0; year <= maxYears; year++) {
+      const value = calculateFutureValue(year)
+      const contributions = currentSavings + monthlySavings * 12 * year
+
       data.push({
         year,
-        value: Math.round(calculateFutureValue(year)),
-        contributions: Math.round(
-          Number.parseFloat(userData.currentSavings) + Number.parseFloat(userData.monthlySavings) * 12 * year,
-        ),
+        value: Math.max(Math.round(value), 1000), // Ensure minimum value for visibility
+        contributions: Math.max(Math.round(contributions), 1000),
+        goal: goalAmount > 0 ? goalAmount : undefined, // Add goal to each data point
       })
     }
 
@@ -72,18 +108,44 @@ export function GrowthChart({ userData }: GrowthChartProps) {
   }
 
   const chartData = generateChartData()
-  const goalAmount = Number.parseFloat(userData.goalAmount) || 0
-  const targetYears = Number.parseInt(userData.timeframe) || 10
+  const goalAmount = Number.parseFloat(effectiveUserData.goalAmount || '0') || 0
+  const targetYears = Number.parseInt(effectiveUserData.timeframe || '10') || 10
   const projectedValue = calculateFutureValue(targetYears)
+
+  // Debug logging - remove console.log to check for errors
+  // console.log('Chart Data:', chartData.slice(0, 3)) // Show first 3 data points
+  // console.log('Goal Amount:', goalAmount)
+  // console.log('User Data:', {
+  //   currentSavings: effectiveUserData.currentSavings,
+  //   monthlySavings: effectiveUserData.monthlySavings,
+  //   timeframe: effectiveUserData.timeframe
+  // })
+
+  // Ensure we have at least some data
+  if (!chartData || chartData.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Wealth Growth Journey</CardTitle>
+          <CardDescription>Please complete your financial information to see your growth projection</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[350px] flex items-center justify-center text-gray-500">
+            Insufficient data for chart generation
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   const chartConfig = {
     value: {
       label: "Portfolio Value",
-      color: "hsl(var(--chart-1))",
+      color: "#10b981", // emerald-500
     },
     contributions: {
       label: "Total Contributions",
-      color: "hsl(var(--chart-2))",
+      color: "#6b7280", // gray-500
     },
   }
 
@@ -93,7 +155,9 @@ export function GrowthChart({ userData }: GrowthChartProps) {
         <div className="flex items-start justify-between">
           <div className="space-y-2 flex-1">
             <CardTitle className="text-2xl font-bold tracking-tight">Your Wealth Growth Journey</CardTitle>
-            <CardDescription className="text-lg font-medium text-gray-600 leading-relaxed">See how your money grows over time with compound interest</CardDescription>
+            <CardDescription className="text-lg font-medium text-gray-600 leading-relaxed">
+              {!userData ? "Demo projection - complete setup for personalized data" : "See how your money grows over time with compound interest"}
+            </CardDescription>
           </div>
           <div className="flex items-center space-x-2 ml-6">
             <div className="text-right">
@@ -106,25 +170,24 @@ export function GrowthChart({ userData }: GrowthChartProps) {
         </div>
       </CardHeader>
       <CardContent className="pt-2">
-        <ChartContainer config={chartConfig} className="h-[350px]">
+        <div className="h-[350px] w-full border border-gray-200 rounded-lg bg-white p-4">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <XAxis 
                 dataKey="year" 
-                tickLine={false} 
-                axisLine={false} 
+                tickLine={true} 
+                axisLine={true} 
                 tickMargin={8}
                 className="text-sm font-medium text-gray-600"
               />
               <YAxis
-                tickLine={false}
-                axisLine={false}
+                tickLine={true}
+                axisLine={true}
                 tickMargin={8}
                 tickFormatter={(value) => formatCurrency(value / 1000, { showSymbol: false }) + 'k'}
                 className="text-sm font-medium text-gray-600 tabular-nums"
               />
               <ChartTooltip
-                content={<ChartTooltipContent />}
                 formatter={(value, name) => [
                   formatCurrency(Number(value)),
                   name === "value" ? "Portfolio Value" : "Total Contributions",
@@ -134,25 +197,34 @@ export function GrowthChart({ userData }: GrowthChartProps) {
               <Line
                 type="monotone"
                 dataKey="contributions"
-                stroke="var(--color-contributions)"
+                stroke="#6b7280"
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 dot={false}
+                connectNulls={true}
               />
-              <Line type="monotone" dataKey="value" stroke="var(--color-value)" strokeWidth={3} dot={false} />
+              <Line 
+                type="monotone" 
+                dataKey="value" 
+                stroke="#10b981" 
+                strokeWidth={3} 
+                dot={false} 
+                connectNulls={true}
+              />
               {goalAmount > 0 && (
                 <Line
                   type="monotone"
-                  dataKey={() => goalAmount}
+                  dataKey="goal"
                   stroke="#ef4444"
                   strokeWidth={2}
                   strokeDasharray="10 5"
                   dot={false}
+                  connectNulls={true}
                 />
               )}
             </LineChart>
           </ResponsiveContainer>
-        </ChartContainer>
+        </div>
         <div className="flex justify-center space-x-8 mt-6 text-sm font-medium">
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-emerald-600 rounded-full shadow-sm"></div>
